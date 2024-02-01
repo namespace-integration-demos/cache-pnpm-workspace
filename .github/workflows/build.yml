@@ -1,0 +1,38 @@
+name: Build
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build-with-cache:
+    runs-on:
+    # Replace with your profile label https://namespace.so/docs/features/faster-github-actions#using-runner-profiles
+    - namespace-profile-amd64-with-caching
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with: 
+            version: "8.6.2"
+      - name: Setup npm cache
+        uses: namespacelabs/nscloud-cache-action@v1
+        with:
+          cache: pnpm
+          path: |
+            ./node_modules/.cache
+      - name: Install dependencies
+        run: pnpm install
+        working-directory: ./demo/fullstack
+
+  build-no-cache:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with: 
+            version: "8.6.2"
+      - name: Install dependencies
+        run: pnpm install
+        working-directory: ./demo/fullstack
+
